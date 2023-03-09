@@ -1,7 +1,10 @@
 import { useState } from "react";
-import axios from "axios";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+
+import axios from "../api/axios";
+const REGISTER_URL = "/register";
+const LOGIN_URL = "/authenticate";
 
 const Auth = () => {
   return (
@@ -26,13 +29,14 @@ const Login = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:3500/authenticate", {
+      const response = await axios.post(LOGIN_URL, {
         userName,
         password,
       });
 
       setCookies("access_token", response.data.accessToken);
       localStorage.setItem("userId", response.data.userId);
+
       navigate("/");
     } catch (error) {
       console.error(error);
@@ -59,7 +63,7 @@ const Register = () => {
     event.preventDefault();
 
     try {
-      await axios.post("http://localhost:3500/register", {
+      await axios.post(REGISTER_URL, {
         userName,
         password,
       });

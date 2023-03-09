@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useGetUserID } from "../hooks/useGetUserID";
-import axios from "axios";
-import { useCookies } from "react-cookie";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const Home = () => {
   const [recipes, setRecipes] = useState([]);
   const [savedRecipes, setSavedRecipes] = useState([]);
-  const [cookies, _] = useCookies(["access_token"]);
 
   const userID = useGetUserID();
+  const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await axios.get("http://localhost:3500/api/recipes", {
-          headers: { authorization: `Bearer ${cookies.access_token}` },
-        });
+        const response = await axiosPrivate.get("/api/recipes");
         setRecipes(response.data);
       } catch (err) {
         console.log(err);
@@ -24,11 +21,8 @@ const Home = () => {
 
     const fetchSavedRecipes = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3500/api/recipes/savedRecipes/ids/${userID}`,
-          {
-            headers: { authorization: `Bearer ${cookies.access_token}` },
-          }
+        const response = await axiosPrivate.get(
+          `/api/recipes/savedRecipes/ids/${userID}`
         );
         setSavedRecipes(response.data.savedRecipes);
       } catch (err) {
@@ -44,16 +38,10 @@ const Home = () => {
 
   const saveRecipe = async (recipeID) => {
     try {
-      const response = await axios.put(
-        "http://localhost:3500/api/recipes",
-        {
-          recipeID,
-          userID,
-        },
-        {
-          headers: { authorization: `Bearer ${cookies.access_token}` },
-        }
-      );
+      const response = await axiosPrivate.put("/api/recipes", {
+        recipeID,
+        userID,
+      });
       setSavedRecipes(response.data.savedRecipes);
     } catch (err) {
       console.log(err);
